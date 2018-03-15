@@ -10,7 +10,7 @@ Spree::Product.class_eval do
   end
 
   def self.boost_fields
-    [:boost_factor]
+    { boost_factor: { missing: 1 } }
   end
 
   def search_data
