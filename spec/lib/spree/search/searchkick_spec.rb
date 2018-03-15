@@ -55,5 +55,31 @@ describe Spree::Search::Searchkick do
         end
       end
     end
+
+    describe 'boosting' do
+      let!(:boost_product) { create :product, boost_factor: boost_factor }
+
+      before { Spree::Product.reindex }
+
+      subject { Spree::Search::Searchkick.new({}).retrieve_products.first }
+
+      context 'when boost_factor is 0' do
+        let(:boost_factor) { 0 }
+
+        it { is_expected.to eq(product) }
+      end
+
+      context 'when boost_factor is 1' do
+        let(:boost_factor) { 1 }
+
+        it { is_expected.to eq(product) }
+      end
+
+      context 'when boost_factor is 2' do
+        let(:boost_factor) { 2 }
+
+        it { is_expected.to eq(boost_product) }
+      end
+    end
   end
 end

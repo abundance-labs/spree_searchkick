@@ -13,6 +13,7 @@ module Spree
           where: where_query,
           aggs: aggregations,
           smart_aggs: true,
+          boost_by: Spree::Product.boost_fields,
           order: sorted,
           page: curr_page,
           per_page: per_page

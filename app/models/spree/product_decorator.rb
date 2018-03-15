@@ -9,6 +9,10 @@ Spree::Product.class_eval do
     [:name]
   end
 
+  def self.boost_fields
+    [:boost_factor]
+  end
+
   def search_data
     json = {
       name: name,
@@ -20,7 +24,8 @@ Spree::Product.class_eval do
       currency: currency,
       conversions: orders.complete.count,
       taxon_ids: taxon_and_ancestors.map(&:id),
-      taxon_names: taxon_and_ancestors.map(&:name)
+      taxon_names: taxon_and_ancestors.map(&:name),
+      boost_factor: boost_factor
     }
 
     Spree::Property.all.each do |prop|
