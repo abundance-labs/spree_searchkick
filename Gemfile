@@ -5,7 +5,7 @@ gem 'spree', github: 'spree/spree'
 gem 'spree_auth_devise', github: 'spree/spree_auth_devise'
 
 # Provides searchkick functionalities for testing
-gem 'searchkick', '>= 2.4.0'
+gem 'searchkick', '>= 3.0.1'
 
 gem 'rails-controller-testing'
 

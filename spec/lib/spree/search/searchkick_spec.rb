@@ -84,15 +84,15 @@ describe Spree::Search::Searchkick do
       end
 
       context 'when product has similar name' do
-        let(:boost_factor) { 0 }
+        let(:boost_factor) { 3 }
         let(:keywords) { 'why' }
 
         before do
-          product.update(name: 'Why Write')
-          boost_product.update(name: 'why is why')
+          product.update(name: 'Why Why Why Did Dinosaurs Lay Eggs?')
+          boost_product.update(name: 'Minefields & Miracles: Why God and Allah Need to Talk')
         end
 
-        it { is_expected.to eq(product) }
+        it { is_expected.to eq(boost_product) }
       end
     end
   end
