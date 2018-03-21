@@ -58,10 +58,12 @@ describe Spree::Search::Searchkick do
 
     describe 'boosting' do
       let!(:boost_product) { create :product, boost_factor: boost_factor }
+      let(:keywords) { nil }
 
-      before { Spree::Product.reindex }
-
-      subject { Spree::Search::Searchkick.new({}).retrieve_products.first }
+      subject do
+        Spree::Product.reindex
+        Spree::Search::Searchkick.new(keywords: keywords).retrieve_products.first
+      end
 
       context 'when boost_factor is 0' do
         let(:boost_factor) { 0 }
@@ -79,6 +81,18 @@ describe Spree::Search::Searchkick do
         let(:boost_factor) { 2 }
 
         it { is_expected.to eq(boost_product) }
+      end
+
+      context 'when product has similar name' do
+        let(:boost_factor) { 0 }
+        let(:keywords) { 'why' }
+
+        before do
+          product.update(name: 'Why Write')
+          boost_product.update(name: 'why is why')
+        end
+
+        it { is_expected.to eq(product) }
       end
     end
   end
