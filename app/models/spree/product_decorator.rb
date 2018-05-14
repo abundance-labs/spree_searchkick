@@ -36,7 +36,13 @@ Spree::Product.class_eval do
       json.merge!(Hash["#{taxonomy.name.downcase}_ids", taxon_by_taxonomy(taxonomy.id).map(&:id)])
     end
 
+    json.merge!(index_data)
+
     json
+  end
+
+  def index_data
+    {}
   end
 
   def taxon_by_taxonomy(taxonomy_id)
