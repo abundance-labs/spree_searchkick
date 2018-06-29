@@ -1,4 +1,13 @@
 Spree::Product.class_eval do
+  scope :search_import, lambda {
+    includes(
+      :orders,
+      taxons: :taxonomy,
+      master: :default_price,
+      product_properties: :property
+    )
+  }
+
   searchkick word_start: [:name], settings: { number_of_replicas: 0 } unless respond_to?(:searchkick_index)
 
   def self.autocomplete_fields
@@ -14,6 +23,8 @@ Spree::Product.class_eval do
   end
 
   def search_data
+    all_taxons = taxon_and_ancestors
+
     json = {
       name: name,
       description: description,
@@ -23,17 +34,17 @@ Spree::Product.class_eval do
       price: price,
       currency: currency,
       conversions: orders.complete.count,
-      taxon_ids: taxon_and_ancestors.map(&:id),
-      taxon_names: taxon_and_ancestors.map(&:name),
+      taxon_ids: all_taxons.map(&:id),
+      taxon_names: all_taxons.map(&:name),
       boost_factor: boost_factor
     }
 
-    Spree::Property.all.each do |prop|
-      json.merge!(Hash[prop.name.downcase, property(prop.name)])
+    product_properties.each do |prod_prop|
+      json.merge!(Hash[prod_prop.property.name.downcase, prod_prop.value])
     end
 
-    Spree::Taxonomy.all.each do |taxonomy|
-      json.merge!(Hash["#{taxonomy.name.downcase}_ids", taxon_by_taxonomy(taxonomy.id).map(&:id)])
+    taxons.group_by(&:taxonomy).map do |taxonomy, taxons|
+      json.merge!(Hash["#{taxonomy.name.downcase}_ids", taxons.map(&:id)])
     end
 
     json.merge!(index_data)
