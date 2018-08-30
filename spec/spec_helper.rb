@@ -86,4 +86,6 @@ RSpec.configure do |config|
 
   config.fail_fast = ENV['FAIL_FAST'] || false
   config.order = 'random'
+
+  ActiveJob::Base.queue_adapter = :inline
 end
