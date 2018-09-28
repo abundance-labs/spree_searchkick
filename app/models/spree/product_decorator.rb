@@ -1,7 +1,8 @@
 Spree::Product.class_eval do
   scope :search_import, lambda {
     includes(
-      :orders,
+      taxons: :taxonomy,
+      product_properties: :property,
       master: :default_price
     )
   }
@@ -37,11 +38,11 @@ Spree::Product.class_eval do
       boost_factor: boost_factor
     }
 
-    product_properties.includes(:property).each do |prod_prop|
+    loaded(:product_properties, :property).each do |prod_prop|
       json.merge!(Hash[prod_prop.property.name.downcase, prod_prop.value])
     end
 
-    taxons.includes(:taxonomy).group_by(&:taxonomy).map do |taxonomy, taxons|
+    loaded(:taxons, :taxonomy).group_by(&:taxonomy).map do |taxonomy, taxons|
       json.merge!(Hash["#{taxonomy.name.downcase}_ids", taxons.map(&:id)])
     end
 
@@ -85,5 +86,12 @@ Spree::Product.class_eval do
       active: true,
       price: { not: nil }
     }
+  end
+
+  protected
+
+  def loaded(prop, incl)
+    relation = send(prop)
+    relation.loaded? ? relation : relation.includes(incl)
   end
 end
