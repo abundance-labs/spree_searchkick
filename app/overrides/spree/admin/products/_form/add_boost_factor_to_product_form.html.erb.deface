@@ -1,5 +1,0 @@
-<!-- insert_bottom 'div[data-hook=admin_product_form_promotionable]' -->
-<%= f.field_container :boost_factor, class: ['form-group'] do %>
-  <%= f.label :boost_factor, Spree.t(:boost_factor) %>
-  <%= f.select :boost_factor, (0..3).to_a, {}, class: 'form-control' %>
-<% end %>
